@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://xmlns.oracle.com/TestApplication/CustomerInfoService/CustomerInfoBPELProcess"
+     xmlns="http://www.w3.org/2001/XMLSchema">
+    <element name="process">
+        <complexType>
+            <sequence>
+                <element name="CustomerId" type="string"/>
+            </sequence>
+        </complexType>
+    </element>
+    <element name="processResponse">
+        <complexType>
+            <sequence>
+                <element name="CustomerId" type="string"/>
+                <element name="CustomerFirstName" type="string"/>
+                <element name="CustomerLastName" type="string"/>
+                <element name="CustomerCity" type="string"/>
+                <element name="CustomerCountry" type="string"/>
+            </sequence>
+        </complexType>
+    </element>
+</schema>

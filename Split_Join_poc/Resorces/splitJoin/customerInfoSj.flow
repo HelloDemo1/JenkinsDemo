@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpel:process name="customerInfoSj"
+              targetNamespace="http://www.example.com/flow/Split_Join_poc/Resorces/splitJoin/customerInfoSj"
+              xmlns:tns="http://www.example.com/flow/Split_Join_poc/Resorces/splitJoin/customerInfoSj"
+              xmlns:bpel="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+              xmlns:rescon="http://www.bea.com/alsb/flow/resources/config"
+              xmlns:bea="http://www.bea.com/bpel/ui/extensions"
+              xmlns:ext="http://www.bea.com/bpel/extensions"
+              xmlns:expr="http://www.bea.com/wli/sb/stages/config"
+              xmlns:trf="http://www.bea.com/wli/sb/stages/transform/config"
+              xmlns:bind="http://xmlns.oracle.com/TestApplication/CustomerAddressService/CustomerAddressBPELProcess" 
+              bea:name="customerInfoSj" xmlns:ns1="http://xmlns.oracle.com/TestApplication/CustomerNameService/CustomerNameBPELProcess" xmlns:ns0="http://xmlns.oracle.com/TestApplication/CustomerNameService/CustomerNameBPELProcess">
+    <bpel:partnerLinks>
+        <bpel:partnerLink name="customerInfoSj" partnerLinkType="tns:customerInfoSj"
+                          myRole="customerInfoSj">
+	       </bpel:partnerLink>
+	   <bpel:partnerLink name="getCustomerNameBS"
+		partnerLinkType="tns:getCustomerNameBS_plnkType"
+		partnerRole="getCustomerNameBS_PartnerRole">
+	   </bpel:partnerLink>
+	   <bpel:partnerLink name="getCustomerAddressBS"
+	   	partnerLinkType="tns:getCustomerAddressBS_plnkType"
+	   	partnerRole="getCustomerAddressBS_PartnerRole">
+	   </bpel:partnerLink></bpel:partnerLinks>
+
+	   <bpel:variables>
+        <bpel:variable name="request"
+	                      messageType="bind:CustomerAddressBPELProcessRequestMessage">
+	       </bpel:variable>
+	       <bpel:variable name="response"
+                       messageType="bind:CustomerAddressBPELProcessResponseMessage">
+	       </bpel:variable>
+    <bpel:variable name="CustomerNameInfo"
+		messageType="ns1:CustomerNameBPELProcessResponseMessage">
+    </bpel:variable>
+    <bpel:variable name="customerAddressInfo"
+    	messageType="bind:CustomerAddressBPELProcessResponseMessage">
+    </bpel:variable></bpel:variables>
+
+    <bpel:sequence>
+        <bpel:receive partnerLink="customerInfoSj" operation="process" variable="request" createInstance="yes">
+	           <rescon:receiveInfo>
+                <rescon:wsdl ref="StaticSplitJoinUseCase/resources/CustomerAddressServiceWSDL" binding="bind:CustomerAddressBPELProcessBinding"/>
+            </rescon:receiveInfo>
+        </bpel:receive>
+        <bpel:flow>
+        	<bpel:scope bea:name="getCustomerName_Scope">
+        		<bpel:variables>
+        			<bpel:variable name="getCustomerNameReqMsg"
+        				messageType="ns1:CustomerNameBPELProcessRequestMessage">
+        			</bpel:variable>
+        			<bpel:variable name="getCustomerNameRespMsg"
+        				messageType="ns1:CustomerNameBPELProcessResponseMessage">
+        			</bpel:variable></bpel:variables>
+        		<bpel:sequence>
+        			<bpel:assign bea:name="Assign_customerNameRequest">
+        				<bpel:extensionAssignOperation>
+        					<trf:assign varName="getCustomerNameReqMsg.payload">
+        						<trf:expr>
+        							<expr:xqueryText>&lt;ns1:process&gt;
+&lt;ns1:CustomerId&gt;{$request.payload/bind:CustomerId/text()}&lt;/ns1:CustomerId&gt;
+&lt;/ns1:process&gt;</expr:xqueryText></trf:expr></trf:assign>
+        				</bpel:extensionAssignOperation>
+        			</bpel:assign>
+        			<bpel:invoke operation="process" partnerLink="getCustomerNameBS" inputVariable="getCustomerNameReqMsg" outputVariable="getCustomerNameRespMsg" bea:name="Invoke_getCustomerNameService">
+        				<rescon:invokeInfo>
+        					<rescon:service isProxy="false" ref="Split_Join_poc/Business/getCustomerNameBS"></rescon:service></rescon:invokeInfo></bpel:invoke></bpel:sequence>
+        	</bpel:scope>
+        	<bpel:scope bea:name="getCustomerAddress_Scope">
+        		<bpel:variables>
+        			<bpel:variable name="getCustomerAddressReqMsg"
+        				messageType="bind:CustomerAddressBPELProcessRequestMessage">
+        			</bpel:variable>
+        			<bpel:variable name="getCustomerAddressRespMsg"
+        				messageType="bind:CustomerAddressBPELProcessResponseMessage">
+        			</bpel:variable></bpel:variables>
+        		<bpel:sequence>
+        			<bpel:assign bea:name="Assign_customerAddressRequest">
+        				<bpel:extensionAssignOperation>
+        					<trf:assign varName="getCustomerAddressReqMsg.payload">
+        						<trf:expr>
+        							<expr:xqueryText>&lt;ns0:process&gt;
+&lt;ns0:CustomerId&gt;{$request.payload/bind:CustomerId/text()}&lt;/ns0:CustomerId&gt;
+&lt;/ns0:process&gt;</expr:xqueryText></trf:expr></trf:assign>
+        				</bpel:extensionAssignOperation>
+        			</bpel:assign>
+        			<bpel:invoke operation="process" partnerLink="getCustomerAddressBS" outputVariable="getCustomerAddressRespMsg" bea:name="Invoke_getCustomerAddressService">
+        				<rescon:invokeInfo>
+        					<rescon:service isProxy="false" ref="Split_Join_poc/Business/getCustomerAddressBS"></rescon:service></rescon:invokeInfo></bpel:invoke></bpel:sequence>
+        	</bpel:scope>
+        </bpel:flow>
+        <bpel:reply partnerLink="customerInfoSj" operation="process" variable="response"></bpel:reply>
+    </bpel:sequence>
+</bpel:process>

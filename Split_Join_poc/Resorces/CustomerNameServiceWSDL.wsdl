@@ -1,0 +1,44 @@
+<wsdl:definitions name="CustomerNameBPELProcess" targetNamespace="http://xmlns.oracle.com/TestApplication/CustomerNameService/CustomerNameBPELProcess" xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/" xmlns:client="http://xmlns.oracle.com/TestApplication/CustomerNameService/CustomerNameBPELProcess" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+    <wsdl:documentation>
+        <abstractWSDL>http://localhost:7001/soa-infra/services/default/CustomerNameService!1.0/CustomerNameBPELProcess.wsdl</abstractWSDL>
+    </wsdl:documentation>
+    <plnk:partnerLinkType name="CustomerNameBPELProcess">
+        <plnk:role name="CustomerNameBPELProcessProvider">
+            <plnk:portType name="client:CustomerNameBPELProcess"/>
+        </plnk:role>
+    </plnk:partnerLinkType>
+    <wsdl:types>
+        <schema xmlns="http://www.w3.org/2001/XMLSchema">
+            <import namespace="http://xmlns.oracle.com/TestApplication/CustomerNameService/CustomerNameBPELProcess" schemaLocation="CustomerNameServiceXSD.xsd"/>
+        </schema>
+    </wsdl:types>
+    <wsdl:message name="CustomerNameBPELProcessRequestMessage">
+        <wsdl:part name="payload" element="client:process"/>
+    </wsdl:message>
+    <wsdl:message name="CustomerNameBPELProcessResponseMessage">
+        <wsdl:part name="payload" element="client:processResponse"/>
+    </wsdl:message>
+    <wsdl:portType name="CustomerNameBPELProcess">
+        <wsdl:operation name="process">
+            <wsdl:input message="client:CustomerNameBPELProcessRequestMessage"/>
+            <wsdl:output message="client:CustomerNameBPELProcessResponseMessage"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="CustomerNameBPELProcessBinding" type="client:CustomerNameBPELProcess">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="process">
+            <soap:operation style="document" soapAction="process"/>
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://xmlns.oracle.com/TestApplication/CustomerNameService/CustomerNameBPELProcess"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://xmlns.oracle.com/TestApplication/CustomerNameService/CustomerNameBPELProcess"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="customernamebpelprocess_client_ep">
+        <wsdl:port name="CustomerNameBPELProcess_pt" binding="client:CustomerNameBPELProcessBinding">
+            <soap:address location="http://localhost:8081/mockCustomerNameBPELProcessBinding"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>
